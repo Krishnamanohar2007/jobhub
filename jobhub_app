@@ -1,0 +1,629 @@
+import React, { useState, useMemo } from 'react';
+
+// Header Component
+const Header = () => {
+  return (
+    <header style={{
+      background: 'linear-gradient(to right, #4F46E5, #3B82F6)',
+      height: '64px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+    }}>
+      <div style={{
+        maxWidth: '1280px',
+        margin: '0 auto',
+        padding: '0 24px',
+        height: '100%'
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          height: '100%'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <h1 style={{
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: 'white',
+              margin: 0
+            }}>JobHub</h1>
+          </div>
+
+          <nav style={{
+            display: 'none',
+            alignItems: 'center',
+            gap: '32px'
+          }}>
+            {['Jobs', 'Companies', 'Salary', 'Resources'].map((item) => (
+              <a
+                key={item}
+                href="#"
+                style={{
+                  color: 'white',
+                  textDecoration: 'none',
+                  transition: 'opacity 0.2s'
+                }}
+              >
+                {item}
+              </a>
+            ))}
+          </nav>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <button style={{
+              padding: '8px 16px',
+              border: '1px solid white',
+              color: 'white',
+              background: 'transparent',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}>
+              Sign In
+            </button>
+            <button style={{
+              padding: '8px 16px',
+              background: 'white',
+              color: '#3B82F6',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontWeight: '500'
+            }}>
+              Post a Job
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+// FilterSection Component
+const FilterSection = ({ title, filters, onChange }) => {
+  return (
+    <div style={{ marginBottom: '24px' }}>
+      <h3 style={{
+        fontSize: '14px',
+        fontWeight: '600',
+        color: '#111827',
+        marginBottom: '12px',
+        marginTop: 0
+      }}>{title}</h3>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {filters.map((filter, index) => (
+          <div key={index} style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '4px 0'
+          }}>
+            <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={filter.checked}
+                onChange={() => onChange(title, filter.label, !filter.checked)}
+                style={{
+                  marginRight: '8px',
+                  width: '16px',
+                  height: '16px',
+                  accentColor: '#3B82F6',
+                  cursor: 'pointer'
+                }}
+              />
+              <span style={{ fontSize: '14px', color: '#374151' }}>{filter.label}</span>
+            </label>
+            <span style={{ fontSize: '12px', color: '#6B7280' }}>({filter.count})</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// FilterSidebar Component
+const FilterSidebar = ({ filters, onFilterChange }) => {
+  const jobTypeFilters = [
+    { label: "Full Time", count: 234, checked: filters.jobType.includes("Full Time") },
+    { label: "Part Time", count: 99, checked: filters.jobType.includes("Part Time") },
+    { label: "Contract", count: 156, checked: filters.jobType.includes("Contract") },
+    { label: "Remote", count: 178, checked: filters.jobType.includes("Remote") }
+  ];
+
+  const locationFilters = [
+    { label: "San Francisco", count: 87, checked: filters.location.includes("San Francisco") },
+    { label: "New York", count: 123, checked: filters.location.includes("New York") },
+    { label: "London", count: 45, checked: filters.location.includes("London") },
+    { label: "Berlin", count: 67, checked: filters.location.includes("Berlin") }
+  ];
+
+  const experienceFilters = [
+    { label: "Entry Level", count: 45, checked: filters.experienceLevel.includes("Entry Level") },
+    { label: "Mid Level", count: 189, checked: filters.experienceLevel.includes("Mid Level") },
+    { label: "Senior Level", count: 134, checked: filters.experienceLevel.includes("Senior Level") }
+  ];
+
+  return (
+    <div style={{
+      width: '256px',
+      background: 'white',
+      borderRadius: '8px',
+      padding: '16px',
+      height: 'fit-content',
+      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+    }}>
+      <FilterSection
+        title="Job Type"
+        filters={jobTypeFilters}
+        onChange={onFilterChange}
+      />
+      <FilterSection
+        title="Location"
+        filters={locationFilters}
+        onChange={onFilterChange}
+      />
+      <FilterSection
+        title="Experience Level"
+        filters={experienceFilters}
+        onChange={onFilterChange}
+      />
+    </div>
+  );
+};
+
+// JobCard Component
+const JobCard = ({ job, onSelect, isSelected }) => {
+  return (
+    <div 
+      style={{
+        border: isSelected ? '1px solid #3B82F6' : '1px solid #E5E7EB',
+        borderRadius: '8px',
+        padding: '16px',
+        marginBottom: '16px',
+        cursor: 'pointer',
+        background: isSelected ? '#EFF6FF' : 'white',
+        transition: 'box-shadow 0.2s ease'
+      }}
+      onClick={() => onSelect(job)}
+      onMouseEnter={(e) => e.target.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)'}
+      onMouseLeave={(e) => e.target.style.boxShadow = 'none'}
+    >
+      <div style={{ marginBottom: '8px' }}>
+        <h3 style={{
+          fontSize: '18px',
+          fontWeight: '600',
+          color: '#111827',
+          margin: '0 0 4px 0'
+        }}>{job.title}</h3>
+        <p style={{
+          color: '#3B82F6',
+          fontSize: '14px',
+          fontWeight: '500',
+          margin: '0 0 8px 0'
+        }}>{job.company}</p>
+      </div>
+
+      <div style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '16px',
+        marginBottom: '12px',
+        fontSize: '14px',
+        color: '#6B7280'
+      }}>
+        <span>📍 {job.location}</span>
+        <span>💼 {job.type}</span>
+        <span>💰 {job.salary}</span>
+      </div>
+
+      <div style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '8px',
+        marginBottom: '12px'
+      }}>
+        {job.tags.map((tag, index) => (
+          <span
+            key={index}
+            style={{
+              background: '#DBEAFE',
+              color: '#1E40AF',
+              fontSize: '12px',
+              padding: '4px 8px',
+              borderRadius: '4px'
+            }}
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+
+      <button style={{
+        background: '#3B82F6',
+        color: 'white',
+        padding: '8px 16px',
+        border: 'none',
+        borderRadius: '4px',
+        fontSize: '14px',
+        fontWeight: '500',
+        cursor: 'pointer'
+      }}>
+        Apply Now
+      </button>
+    </div>
+  );
+};
+
+// JobListings Component
+const JobListings = ({ jobs, onJobSelect, selectedJob }) => {
+  return (
+    <div style={{
+      flex: 1,
+      background: 'white',
+      borderRadius: '8px',
+      padding: '24px',
+      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+    }}>
+      <div style={{ marginBottom: '24px' }}>
+        <h2 style={{
+          fontSize: '20px',
+          fontWeight: '600',
+          color: '#111827',
+          margin: '0 0 4px 0'
+        }}>Latest Job Openings</h2>
+        <p style={{
+          fontSize: '14px',
+          color: '#6B7280',
+          margin: 0
+        }}>{jobs.length} jobs found</p>
+      </div>
+
+      <div>
+        {jobs.map((job) => (
+          <JobCard
+            key={job.id}
+            job={job}
+            onSelect={onJobSelect}
+            isSelected={selectedJob?.id === job.id}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// JobDetail Component
+const JobDetail = ({ job }) => {
+  if (!job) {
+    return (
+      <div style={{
+        width: '320px',
+        background: 'white',
+        borderRadius: '8px',
+        padding: '24px',
+        height: 'fit-content',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+      }}>
+        <div style={{
+          textAlign: 'center',
+          color: '#6B7280',
+          padding: '32px 0'
+        }}>
+          <p>Select a job to view details</p>
+        </div>
+      </div>
+    );
+  }
+
+  const jobDetails = {
+    description: "We're looking for a skilled Senior Frontend Developer to join our dynamic team. You'll be responsible for building cutting-edge web applications using modern technologies and best practices.",
+    requirements: [
+      "5+ years of experience with React and modern JavaScript",
+      "Strong knowledge of TypeScript and Next.js",
+      "Experience with state management (Redux, Zustand)",
+      "Familiarity with testing frameworks (Jest, Cypress)",
+      "Understanding of web performance optimization"
+    ],
+    benefits: [
+      "Competitive salary and equity package",
+      "Health, dental, and vision insurance",
+      "Flexible work arrangements",
+      "Professional development budget",
+      "Unlimited PTO policy"
+    ]
+  };
+
+  return (
+    <div style={{
+      width: '320px',
+      background: 'white',
+      borderRadius: '8px',
+      padding: '24px',
+      height: 'fit-content',
+      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+    }}>
+      <div style={{ marginBottom: '24px' }}>
+        <h2 style={{
+          fontSize: '20px',
+          fontWeight: '600',
+          color: '#111827',
+          margin: '0 0 8px 0'
+        }}>{job.title}</h2>
+        <p style={{
+          color: '#3B82F6',
+          fontWeight: '500',
+          margin: '0 0 16px 0'
+        }}>{job.company}</p>
+        
+        <div style={{
+          textAlign: 'center',
+          background: '#EFF6FF',
+          borderRadius: '8px',
+          padding: '16px',
+          marginBottom: '24px'
+        }}>
+          <div style={{
+            fontSize: '24px',
+            fontWeight: 'bold',
+            color: '#3B82F6'
+          }}>
+            {job.salary.replace('k', ',000')}
+          </div>
+          <div style={{
+            fontSize: '14px',
+            color: '#6B7280'
+          }}>per year</div>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div>
+          <h3 style={{
+            fontSize: '18px',
+            fontWeight: '600',
+            color: '#111827',
+            margin: '0 0 12px 0'
+          }}>Job Description</h3>
+          <p style={{
+            fontSize: '14px',
+            color: '#374151',
+            lineHeight: '1.5',
+            margin: 0
+          }}>
+            {jobDetails.description}
+          </p>
+        </div>
+
+        <div>
+          <h3 style={{
+            fontSize: '18px',
+            fontWeight: '600',
+            color: '#111827',
+            margin: '0 0 12px 0'
+          }}>Requirements</h3>
+          <ul style={{
+            listStyle: 'none',
+            padding: 0,
+            margin: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px'
+          }}>
+            {jobDetails.requirements.map((requirement, index) => (
+              <li key={index} style={{
+                fontSize: '14px',
+                color: '#374151',
+                position: 'relative',
+                paddingLeft: '16px'
+              }}>
+                <span style={{
+                  position: 'absolute',
+                  left: 0,
+                  color: '#3B82F6'
+                }}>•</span>
+                {requirement}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h3 style={{
+            fontSize: '18px',
+            fontWeight: '600',
+            color: '#111827',
+            margin: '0 0 12px 0'
+          }}>Benefits</h3>
+          <ul style={{
+            listStyle: 'none',
+            padding: 0,
+            margin: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px'
+          }}>
+            {jobDetails.benefits.map((benefit, index) => (
+              <li key={index} style={{
+                fontSize: '14px',
+                color: '#374151',
+                position: 'relative',
+                paddingLeft: '16px'
+              }}>
+                <span style={{
+                  position: 'absolute',
+                  left: 0,
+                  color: '#3B82F6'
+                }}>•</span>
+                {benefit}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <button style={{
+        width: '100%',
+        background: '#3B82F6',
+        color: 'white',
+        padding: '12px',
+        border: 'none',
+        borderRadius: '8px',
+        fontWeight: '500',
+        cursor: 'pointer',
+        marginTop: '24px'
+      }}>
+        Apply for this Position
+      </button>
+    </div>
+  );
+};
+
+// Main JobHub Component
+const JobHub = () => {
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [filters, setFilters] = useState({
+    jobType: ['Full Time'],
+    location: [],
+    experienceLevel: []
+  });
+
+  const allJobs = [
+    {
+      id: 1,
+      title: "Senior Frontend Developer",
+      company: "TechCorp Inc.",
+      location: "San Francisco, CA",
+      type: "Full Time",
+      salary: "$120k - $180k",
+      tags: ["React", "TypeScript", "Next.js"],
+      experienceLevel: "Senior Level"
+    },
+    {
+      id: 2,
+      title: "Product Manager",
+      company: "InnovateLabs",
+      location: "New York, NY",
+      type: "Full Time",
+      salary: "$130k - $200k",
+      tags: ["Strategy", "Analytics", "Leadership"],
+      experienceLevel: "Senior Level"
+    },
+    {
+      id: 3,
+      title: "UX Designer",
+      company: "DesignStudio Pro",
+      location: "Remote",
+      type: "Contract",
+      salary: "$80k - $120k",
+      tags: ["Figma", "User Research", "Prototyping"],
+      experienceLevel: "Mid Level"
+    },
+    {
+      id: 4,
+      title: "Data Scientist",
+      company: "DataFlow Analytics",
+      location: "London, UK",
+      type: "Full Time",
+      salary: "$70k - $100k",
+      tags: ["Python", "Machine Learning", "SQL"],
+      experienceLevel: "Senior Level"
+    },
+    {
+      id: 5,
+      title: "DevOps Engineer",
+      company: "CloudTech Solutions",
+      location: "Berlin, Germany",
+      type: "Full Time",
+      salary: "$85k - $120k",
+      tags: ["AWS", "Docker", "Kubernetes"],
+      experienceLevel: "Senior Level"
+    }
+  ];
+
+  const filteredJobs = useMemo(() => {
+    return allJobs.filter(job => {
+      const jobTypeMatch = filters.jobType.length === 0 || filters.jobType.includes(job.type);
+      const locationMatch = filters.location.length === 0 || 
+        filters.location.some(loc => job.location.includes(loc)) ||
+        (filters.location.includes('Remote') && job.location === 'Remote');
+      const experienceMatch = filters.experienceLevel.length === 0 || 
+        filters.experienceLevel.includes(job.experienceLevel);
+
+      return jobTypeMatch && locationMatch && experienceMatch;
+    });
+  }, [filters]);
+
+  const handleFilterChange = (filterType, filterValue, isChecked) => {
+    setFilters(prev => {
+      let filterKey;
+      switch (filterType) {
+        case 'Job Type':
+          filterKey = 'jobType';
+          break;
+        case 'Location':
+          filterKey = 'location';
+          break;
+        case 'Experience Level':
+          filterKey = 'experienceLevel';
+          break;
+        default:
+          return prev;
+      }
+
+      const currentFilters = prev[filterKey];
+      if (isChecked) {
+        return {
+          ...prev,
+          [filterKey]: [...currentFilters, filterValue]
+        };
+      } else {
+        return {
+          ...prev,
+          [filterKey]: currentFilters.filter(item => item !== filterValue)
+        };
+      }
+    });
+  };
+
+  const handleJobSelect = (job) => {
+    setSelectedJob(job);
+  };
+
+  React.useEffect(() => {
+    if (filteredJobs.length > 0 && !selectedJob) {
+      setSelectedJob(filteredJobs[0]);
+    }
+  }, [filteredJobs, selectedJob]);
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#F9FAFB' }}>
+      <Header />
+      
+      <main style={{ maxWidth: '1280px', margin: '0 auto', padding: '24px' }}>
+        <div style={{
+          display: 'grid',
+          gap: '24px',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          '@media (min-width: 1024px)': {
+            gridTemplateColumns: '256px 1fr 320px'
+          }
+        }}>
+          <FilterSidebar 
+            filters={filters}
+            onFilterChange={handleFilterChange}
+          />
+          
+          <JobListings
+            jobs={filteredJobs}
+            onJobSelect={handleJobSelect}
+            selectedJob={selectedJob}
+          />
+          
+          <JobDetail job={selectedJob} />
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default JobHub;
